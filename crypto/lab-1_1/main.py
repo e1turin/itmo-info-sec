@@ -29,7 +29,7 @@ def encrypt(text: str, square: PolybiySquare) -> str:
             row, col = square[char]
             encrypted_text.append(f"{row}{col}")
         else:
-            encrypted_text.append(f"??")
+            encrypted_text.append("??")
     return "".join(encrypted_text)
 
 
