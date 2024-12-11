@@ -24,6 +24,9 @@ class LSR:
         self.state = (feedback_bit << (self.size - 1)) | (self.state >> 1) & ((1 << self.size) - 1)
         return shift_bit
 
+    def out(self) -> int:
+        return self.state & 1
+
 def setup(seed: int,debug=False):
     lsr0 = LSR(78, seed, [77, 6, 5, 2, 0])
     lsr1 = LSR(80, seed, [79, 4, 3, 2, 0])
@@ -37,10 +40,12 @@ def setup(seed: int,debug=False):
             case 1:
                 sbit = lsr1.shift()
             case _:
-                raise ValueError(f"control bit out of bounds: {cbit}")
+                raise ValueError(f"control bit is out of bounds: {cbit}")
         if debug:
             print(f"cbit={cbit} sbit={sbit} lsr0={lsr0.state} lsr1={lsr1.state} lsrc={lsrc.state}")
-        return sbit
+        out = lsr0.out() & lsr1.out()
+        assert out == 0 or out == 1, "output value is out of bounds {out}"
+        return out
 
     def y_byte_gen() -> int:
         y_byte = 0
@@ -88,8 +93,12 @@ def main():
     parser.add_argument("--input", "-i", required=True, help="Входной файл")
     parser.add_argument("--output", "-o", required=True, help="Выходной файл")
     args = parser.parse_args()
-    
-    seed: int = args.seed or 0xABCDEF123456790ABCDE
+
+    seed: int = (
+        int.from_bytes(args.seed.encode(encoding="utf-8"), byteorder="little")
+        if args.seed
+        else 0xABCDEF123456790ABCDE
+    )
     mode: Mode = args.mode
 
     ifile: str = args.input
