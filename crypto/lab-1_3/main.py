@@ -78,41 +78,6 @@ def process_file(
     with open(output_file, "wb") as f:
         f.write(result)
 
-def process_interactive(seed: int):
-    _, y_byte_gen = setup(seed, debug=False)
-
-    print("start your input")
-    # take user input and encrypt
-    original = bytearray()
-    encrypt = bytearray()
-    try:
-        while True:
-            data = bytearray()
-            user_input = input("> ")
-            data.extend(user_input.encode(encoding='utf-8'))
-            original.extend(data)
-            for b in data:
-                y = y_byte_gen()
-                nb = b ^ y
-                encrypt.append(nb)
-    except KeyboardInterrupt:
-        print("<~ end of input ~>")
-
-    print(f"original message: '{bytes(original).decode(encoding='utf-8')}'")
-    print(f"encoded message: '{"".join(map(chr, encrypt))}'") # contains invalid utf-8 values
-
-
-    # take encrypted data and decrypt
-    _, y_byte_gen = setup(seed, debug=False)
-    decrypt = bytearray()
-    for b in encrypt:
-        y = y_byte_gen()
-        nb = b ^ y
-        print(nb)
-        decrypt.append(nb)
-
-    print("decrypted message:", bytes(decrypt).decode(encoding='utf-8'))
-
 
 def main():
     parser = ArgumentParser(description="")
