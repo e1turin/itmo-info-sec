@@ -53,7 +53,7 @@ def hack_RSA(
 
     if debug:
         print(f"{N=}", f"{e1=}", f"{e2=}", f"{c1=}", f"{c2=}", sep="\n")
-        print("(e₁ × r) - (e₂ × s) = ±1")
+        print("(e1 x r) - (e2 x s) = +-1")
         print(f"{r=},")
         print(f"{s=}")
 
@@ -64,9 +64,9 @@ def hack_RSA(
         part = m.to_bytes(4, byteorder='big').decode('cp1251')
         message.append(part)
         if debug:
-            print(f"C₁[{i}]^r (mod N) = {c1r}")
-            print(f"C₂[{i}]^s (mod N) = {c2s}")
-            print(f"m{i} = ({c1r} × {c2s}) (mod {N}) = {m} => text({m}) = {part}", "\n")
+            print(f"C1[{i}]^r (mod N) = {c1r}")
+            print(f"C1[{i}]^s (mod N) = {c2s}")
+            print(f"m{i} = ({c1r} x {c2s}) (mod {N}) = {m} => text({m}) = {part}", "\n")
 
     return "".join(message)
     
@@ -74,17 +74,12 @@ def hack_RSA(
 def main():
     parser = ArgumentParser(description="Чтение сообщения зашифрованного с помощью RSA без ключа")
     parser.add_argument("--debug", action="store_true", help="Добавить отладочную информацию в вывод")
-    parser.add_argument("-N", required=False, help="Параметр N")
-    parser.add_argument("-e1", required=False, help="Параметр e₁")
-    parser.add_argument("-e2", required=False, help="Параметр e₂")
-    parser.add_argument("-C1", required=False, help="Параметр C₁")
-    parser.add_argument("-C2", required=False, help="Параметр C₂")
     args = parser.parse_args()
 
-    c1 = args.C1 if args.C1 else list(map(int, C1.split()))
-    c2 = args.C2 if args.C2 else list(map(int, C2.split()))
-    e1 = args.e1 if args.e1 else E1
-    e2 = args.e2 if args.e2 else E2
+    c1 = list(map(int, C1.split()))
+    c2 = list(map(int, C2.split()))
+    e1 = E1
+    e2 = E2
 
     message = hack_RSA(N, e1, e2, c1, c2, debug=args.debug)
 
